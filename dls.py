@@ -69,11 +69,11 @@ class Gradient:
     def __init__(self):
 
 
-    def data_to_corr (self, data_dir = None, N_sub= None, res = 0.25, k = 2, type = 'timeseries'):        
+    def data_to_corr (self, data_dir = None, N_sub = None, res = 0.25, k = 2, data_type = 'timeseries'):        
         """load data from the path
         Returns
         -------
-        shirnked 2D array
+        2D array
         """
         self.factor = res
         self.k = k
