@@ -11,6 +11,7 @@ from sklearn.manifold import Isomap
 import umap
 import time
 import tqdm
+from scipy.sparse.linalg import eigsh
 
 def timedemean(matrix):
     # Calculate the mean of each column
