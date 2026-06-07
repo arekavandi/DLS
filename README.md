@@ -1,9 +1,7 @@
 # Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
 ## (DLS)
 ## Overview
-This GitHub repository was established to present the results of the very first work on the certification of regression models against adversarial attack (L2-Attack) using randomized smoothing. While randomized smoothing has been greatly developed for classification tasks, its potential for regression tasks has not been explored. In this work, we show how the maximum adversarial perturbation of the input data can be derived for the base regression model, and then we show how a similar certificate can be extracted for the averaging function as a basic smoothing. 
-
-This repository contains a Jupyter Notebook file for figures presented in the paper for a synthetic mapping function.  It also contains a Python script for the certification of camera-relocation task using RGB images using the code and model provided in [DSAC*](https://github.com/vislearn/dsacstar) repository.
+DLS (Dense Connectome to Low-rank and Sparse components) is a framework for modelling whole-brain connectivity topography from resting-state fMRI. It decomposes the dense connectome into low-rank components associated with functional segregation and sparse components that capture connectivity gradients. By combining low-rank + sparse decomposition with embedding methods such as ICA, ISOMAP and UMAP, DLS provides a unified representation of both abrupt and gradual variations in brain connectivity, achieving a more accurate reconstruction of the dense connectome and producing global gradients that closely align with task-based brain organisation.
 
 We included all the files/models/datasets required to run the project and there is no need to download external files. 
 
