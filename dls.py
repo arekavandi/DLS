@@ -6,6 +6,11 @@ from pathlib import Path
 import random
 from functions import utils_gradients as utils
 
+def timedemean(matrix):
+    # Calculate the mean of each column
+    column_means = np.mean(matrix, axis=1)
+    return (matrix.T - column_means).T
+
 class Dls:
     """Dense Connectome to Low-rank + Sparse Components
 
