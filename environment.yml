@@ -10,6 +10,7 @@ dependencies:
   - matplotlib
   - scikit-image
   - brainspace
+  - nibabel
     - pip
   - pip:
       - git+https://github.com/arekavandi/RobustPCA.git
