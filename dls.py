@@ -7,7 +7,7 @@ class Dls:
 
     Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
 
-    Parametersfbpca.pca
+    Parameters
     ----------
     lamb : positive float
         Sparse component coefficient.
@@ -49,168 +49,27 @@ class Dls:
     S : 2D array
         Sparse but not low-rank 2D matrix
 
-
     Reference:
     ----------
     Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
     
-    https://statweb.stanford.edu/~candes/papers/RobustPCA.pdf
+    https://github.com/arekavandi/DLS
 
     """
 
     def __init__(self, lamb=None, mu=None, max_rank=None, tol=1e-6, max_iter=100, use_fbpca=False, fbpca_rank_ratio=0.2):
         self.lamb = lamb
-        self.mu = mu
-        self.max_rank = max_rank
-        self.tol = tol
-        self.max_iter = max_iter
-        self.use_fbpca = use_fbpca
-        self.fbpca_rank_ratio = fbpca_rank_ratio
-        self.converged = None
-        self.error = []
 
-    def s_tau(self, X, tau):
-        """Shrinkage operator
-            Sτ [x] = sign(x) max(|x| − τ, 0)
-
-        Parameters
-        ----------
-        X : 2D array
-            Data for shrinking
-
-        tau : positive float
-            shrinkage threshold
-
+    def corr_load (self, X, tau):
+        
+        """load data from the path
         Returns
         -------
         shirnked 2D array
         """
+        return X
+    def fit (self, X):
+        return X
+        
+        
 
-        return np.sign(X)*np.maximum(np.abs(X)-tau,0)
-
-
-    def d_tau(self, X):
-        """Singular value thresholding operator
-            Dτ (X) = USτ(Σ)V∗, where X = UΣV∗
-
-        Parameters
-        ----------
-        X : 2D array
-            Data for shrinking
-
-        Returns
-        -------
-        thresholded 2D array
-        """
-
-        # singular value decomposition
-        if self.use_fbpca:
-            if self.max_rank:
-                (u, s, vh) = pca(X, self.max_rank, True, n_iter = 5)
-            else:
-                (u, s, vh) = pca(X, int(np.min(X.shape)*self.fbpca_rank_ratio), True, n_iter = 5)
-        else:
-            u, s, vh = np.linalg.svd(X, full_matrices=False)
-
-        # Shrinkage of singular values
-        tau = 1.0/self.mu
-        s = s[s>tau] - tau
-        rank = len(s)
-
-        if self.max_rank:
-            if rank > self.max_rank:
-                s = s[0:self.max_rank]
-                rank = self.max_rank*1
-
-        # reconstruct thresholded 2D array
-        return  np.dot(u[:, 0:rank] * s, vh[0:rank,:]), rank
-
-
-
-    def fit(self, M):
-        """Robust PCA fit
-
-        Parameters
-        ----------
-        M : 2D array
-            2D array for docomposing
-
-        Returns
-        -------
-        L : 2D array
-            Lower rank dense 2D matrix
-
-        S : 2D array
-            Sparse but not low-rank 2D matrix
-        """
-
-        size = M.shape
-
-        # initialize S and Y (Lagrange multiplier)
-        S = np.zeros(size)
-        Y = np.zeros(size)
-
-        # if lamb and mu are not set, set with default values
-        if self.mu==None:
-            self.mu = np.prod(size)/4.0/np.sum(np.abs(M))
-        if self.lamb==None:
-            self.lamb = 1/np.sqrt(np.max(size))
-
-        # Alternating update
-        print('Starting fitting...')
-        for i in tqdm(range(self.max_iter)):
-            L, rank = self.d_tau(M-S+1.0/self.mu*Y)
-            L=(1/2)*(L+L.T)
-            S = self.s_tau(M-L+1.0/self.mu*Y, self.lamb/self.mu)
-            S=(1/2)*(S+S.T)
-
-            # Calculate residuals
-            residuals = M-L-S
-            residuals_sum = np.sum(np.abs(residuals))
-            self.error.append(residuals_sum)
-
-            # Check convergency
-            if residuals_sum <= self.tol:
-                break
-
-            Y = Y + self.mu*residuals
-
-        # Check if the fit is converged
-        if residuals_sum > self.tol:
-            print('Not converged!')
-            print('Total error: %f, allowed tolerance: %f'%(residuals_sum, self.tol))
-            self.converged = False
-        else:
-            print('Converged!')
-            self.converged = True
-
-        self.L, self.S, self.rank = L, S, rank
-
-    def get_low_rank(self):
-        '''Return the low rank matrix
-
-        Returns:
-        --------
-        L : 2D array
-            Lower rank dense 2D matrix
-        '''
-        return self.L
-
-    def get_sparse(self):
-        '''Return the sparse matrix
-
-        Returns:
-        --------
-        S : 2D array
-            Sparse but not low-rank 2D matrix
-        '''
-        return self.S
-
-    def get_rank(self):
-        '''Return the rank of low rank matrix
-
-        Returns:
-        rank : int
-            The rank of low rank matrix
-        '''
-        return self.rank
