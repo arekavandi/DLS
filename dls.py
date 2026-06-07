@@ -74,117 +74,115 @@ class Dls:
         shirnked 2D array
         """
 
-        for it in range(1):
-            if IDs=='Random':
-                subject_ids=get_random_numeric_dtst_files(base_dir,N=N_sub)
-            else:
-                subject_ids=['100206', '125525', '149741', '175035', '201111',  '297655',  '475855',  '638049',  '825553', '101006',
-                      '101107', '101309', '101915', '115724',  '140117' , '165032',  '192237',  '228434', '393247',  '580650']
-                
-            print(subject_ids)
-            print('Number of subjects: ',len(set(subject_ids)))
+        subject_ids=utils.get_random_files(base_dir,N=N_sub)
+
+        assert subject_ids.endswith(".dtseries.nii"), f"File {dir} must include only CIFTI time series (.dtseries.nii)"
             
-            if data_type == 'dense':
-                names = ['groupPCA_3T_HCP1200_MSMAll_d4500_DenseConnectome']
-            else:
-                names = ['rfMRI_REST1_LR_Atlas_MSMAll_hp2000_clean']
-            
-            # Container to store concatenated data
-            all_data = {}
-            FIRST_TIME=True
-            for sp in names:
-                for i,subject_id in enumerate(subject_ids):
-                    # Construct the directory path for the current subject
-                    dirname = Path(base_dir) / subject_id / 'MNINonLinear' / 'Results' / 'rfMRI_REST1_LR'
-            
-                    # Construct the filename
-                    if data_type == 'dense':
-                        filename = sp + '.dconn.nii'
-                        # Load the data file
-                        data_file = dirname / filename
-                        if not data_file.exists():
-                            print(f"File not found for subject {subject_id}: {data_file}")
-                            continue
-            
-                        values = nib.load(data_file)
-            
-                        # Extract data and append to the list
-                        data_array = np.array(values.get_fdata().T, dtype=np.float64)
-                        concatenated_data.append(data_array)
-            
-                        print(f"Loaded {sp} for subject {subject_id}: {data_array.shape}")
+        print('Number of subjects: ',len(set(subject_ids)))
+        
+        print('CIFTI Files are: 'subject_ids)
+        
+        if data_type == 'dense':
+            names = ['groupPCA_3T_HCP1200_MSMAll_d4500_DenseConnectome']
+        else:
+            names = ['rfMRI_REST1_LR_Atlas_MSMAll_hp2000_clean']
+        
+        # Container to store concatenated data
+        all_data = {}
+        FIRST_TIME=True
+        for sp in names:
+            for i,subject_id in enumerate(subject_ids):
+                # Construct the directory path for the current subject
+                dirname = Path(base_dir) / subject_id / 'MNINonLinear' / 'Results' / 'rfMRI_REST1_LR'
+        
+                # Construct the filename
+                if data_type == 'dense':
+                    filename = sp + '.dconn.nii'
+                    # Load the data file
+                    data_file = dirname / filename
+                    if not data_file.exists():
+                        print(f"File not found for subject {subject_id}: {data_file}")
+                        continue
+        
+                    values = nib.load(data_file)
+        
+                    # Extract data and append to the list
+                    data_array = np.array(values.get_fdata().T, dtype=np.float64)
+                    concatenated_data.append(data_array)
+        
+                    print(f"Loaded {sp} for subject {subject_id}: {data_array.shape}")
+                else:
+                    filename = sp + '.dtseries.nii'
+        
+                    # Load the data file
+                    data_file = dirname / filename
+                    if not data_file.exists():
+                        print(f"File not found for subject {subject_id}: {data_file}")
+                        continue
+        
+                    values = nib.load(data_file)
+        
+                    # Extract data and append to the list
+                    data_array = np.array(values.get_fdata().T, dtype=np.float64)
+                    if FIRST_TIME:
+                        # Map indices for left and right hemispheres
+                        map_left = 1
+                        map_right = 2
+                        if data_type == 'dense':
+                            pointer = 0
+                        else:
+                            pointer = 1
+                        indices_for_left = values.header.matrix._mims[pointer]._maps[map_left]._vertex_indices
+                        indices_for_right = values.header.matrix._mims[pointer]._maps[map_right]._vertex_indices
+                        Nvleft = values.header.matrix._mims[pointer]._maps[map_left].surface_number_of_vertices  #1*32492
+                        left_offset = values.header.matrix._mims[pointer]._maps[map_left].index_offset
+                        Nvright = values.header.matrix._mims[pointer]._maps[map_right].surface_number_of_vertices  #1*32492
+                        right_offset = values.header.matrix._mims[pointer]._maps[map_right].index_offset
+                        leftindices=list(range(left_offset,left_offset+len(indices_for_left)))
+                        rightindices=list(range(right_offset,right_offset+len(indices_for_right)))
+                        fakerightindices=list(range(len(indices_for_right)))
+                        
+                    if i==0:
+                        sub_data=timedemean(data_array)
+                        dataleft=sub_data[leftindices,:]
+                        dataright=sub_data[rightindices,:]
+                        leftsurf = nib.load("/home/fs0/bsg097/scratch/human.L.inflated.surf.gii")
+                        rightsurf= nib.load("/home/fs0/bsg097/scratch/human.R.inflated.surf.gii")
+                    
+                        both_hem_data = np.concatenate((dataleft, dataright), axis=0)
+                        sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
+                    
+                        #sampled_data,correspondence,indices_picked=utils.down_sample(dataleft,factor, k, leftsurf.darrays[0].data[indices_for_left,:] )
                     else:
-                        filename = sp + '.dtseries.nii'
-            
-                        # Load the data file
-                        data_file = dirname / filename
-                        if not data_file.exists():
-                            print(f"File not found for subject {subject_id}: {data_file}")
-                            continue
-            
-                        values = nib.load(data_file)
-            
-                        # Extract data and append to the list
-                        data_array = np.array(values.get_fdata().T, dtype=np.float64)
-                        if FIRST_TIME:
-                            # Map indices for left and right hemispheres
-                            map_left = 1
-                            map_right = 2
-                            if data_type == 'dense':
-                                pointer = 0
-                            else:
-                                pointer = 1
-                            indices_for_left = values.header.matrix._mims[pointer]._maps[map_left]._vertex_indices
-                            indices_for_right = values.header.matrix._mims[pointer]._maps[map_right]._vertex_indices
-                            Nvleft = values.header.matrix._mims[pointer]._maps[map_left].surface_number_of_vertices  #1*32492
-                            left_offset = values.header.matrix._mims[pointer]._maps[map_left].index_offset
-                            Nvright = values.header.matrix._mims[pointer]._maps[map_right].surface_number_of_vertices  #1*32492
-                            right_offset = values.header.matrix._mims[pointer]._maps[map_right].index_offset
-                            leftindices=list(range(left_offset,left_offset+len(indices_for_left)))
-                            rightindices=list(range(right_offset,right_offset+len(indices_for_right)))
-                            fakerightindices=list(range(len(indices_for_right)))
-                            
-                        if i==0:
-                            sub_data=timedemean(data_array)
-                            dataleft=sub_data[leftindices,:]
-                            dataright=sub_data[rightindices,:]
-                            leftsurf = nib.load("/home/fs0/bsg097/scratch/human.L.inflated.surf.gii")
-                            rightsurf= nib.load("/home/fs0/bsg097/scratch/human.R.inflated.surf.gii")
-                        
-                            both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                            sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
-                        
-                            #sampled_data,correspondence,indices_picked=utils.down_sample(dataleft,factor, k, leftsurf.darrays[0].data[indices_for_left,:] )
-                        else:
-                            sub_data=timedemean(data_array)
-                            dataleft=sub_data[leftindices,:]
-                            dataright=sub_data[rightindices,:]
-                            both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                            sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
-                        
-                        
-                        if FIRST_TIME:
-                            Dense_C=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
-                            Dense_C_train=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
-                            Dense_C_val=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
-                            FIRST_TIME=False
-                        Dense_C+=(1/len(subject_ids))*np.corrcoef(sampled_data)
-                        #Dense_C+=(1/len(subject_ids))*sampled_data@sampled_data.T
-                        if i%2==0:
-                            Dense_C_train+=np.corrcoef(sampled_data)
-                            #Dense_C_train+=sampled_data@sampled_data.T
-                        else:
-                            Dense_C_val+=np.corrcoef(sampled_data) 
-                            #Dense_C_val+=sampled_data@sampled_data.T
-                        print(f"Loaded {sp} for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
-                Dense_C_train=(2/len(subject_ids))*Dense_C_train
-                Dense_C_val=(2/len(subject_ids))*Dense_C_val
-                full_corr_train_val=np.corrcoef(Dense_C_train.flatten(),Dense_C_val.flatten())[0,1]
-                half_corr_train_val=np.corrcoef(Dense_C_train[np.triu_indices(Dense_C_train.shape[0], k=1)],Dense_C_val[np.triu_indices(Dense_C_val.shape[0], k=1)])[0,1]
-                print('Train vs Val Full Corr:, ',full_corr_train_val)
-                print('Train vs Val Half Corr:, ',half_corr_train_val)
-                print(f"Data Concatenation is complete!")
-                return Dense_C_train, Dense_C_val
+                        sub_data=timedemean(data_array)
+                        dataleft=sub_data[leftindices,:]
+                        dataright=sub_data[rightindices,:]
+                        both_hem_data = np.concatenate((dataleft, dataright), axis=0)
+                        sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
+                    
+                    
+                    if FIRST_TIME:
+                        Dense_C=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
+                        Dense_C_train=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
+                        Dense_C_val=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
+                        FIRST_TIME=False
+                    Dense_C+=(1/len(subject_ids))*np.corrcoef(sampled_data)
+                    #Dense_C+=(1/len(subject_ids))*sampled_data@sampled_data.T
+                    if i%2==0:
+                        Dense_C_train+=np.corrcoef(sampled_data)
+                        #Dense_C_train+=sampled_data@sampled_data.T
+                    else:
+                        Dense_C_val+=np.corrcoef(sampled_data) 
+                        #Dense_C_val+=sampled_data@sampled_data.T
+                    print(f"Loaded {sp} for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
+            Dense_C_train=(2/len(subject_ids))*Dense_C_train
+            Dense_C_val=(2/len(subject_ids))*Dense_C_val
+            full_corr_train_val=np.corrcoef(Dense_C_train.flatten(),Dense_C_val.flatten())[0,1]
+            half_corr_train_val=np.corrcoef(Dense_C_train[np.triu_indices(Dense_C_train.shape[0], k=1)],Dense_C_val[np.triu_indices(Dense_C_val.shape[0], k=1)])[0,1]
+            print('Train vs Val Full Corr:, ',full_corr_train_val)
+            print('Train vs Val Half Corr:, ',half_corr_train_val)
+            print(f"Data Concatenation is complete!")
+            return Dense_C_train, Dense_C_val
         
     def fit (self, X):
         return X
