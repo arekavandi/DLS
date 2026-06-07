@@ -10,3 +10,7 @@ dependencies:
   - matplotlib
   - scikit-image
   - brainspace
+    - pip
+  - pip:
+      - git+https://github.com/arekavandi/RobustPCA.git
+      - git+https://github.com/arekavandi/utils_gradients.git
