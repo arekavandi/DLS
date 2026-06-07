@@ -116,15 +116,14 @@ class Dls:
                 rightsurf= nib.load(surface_dir/"human.R.inflated.surf.gii")
             
                 both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
+                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
             
-                #sampled_data,correspondence,indices_picked=utils.down_sample(dataleft,factor, k, leftsurf.darrays[0].data[indices_for_left,:] )
             else:
                 sub_data=timedemean(data_array)
                 dataleft=sub_data[leftindices,:]
                 dataright=sub_data[rightindices,:]
                 both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
+                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
             
             
             if FIRST_TIME:
