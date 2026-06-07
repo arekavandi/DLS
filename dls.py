@@ -70,7 +70,7 @@ class Dls:
         self.factor = res
         self.k = k
 
-    def data_to_corr (self, N_sub = None, data_dir = None, type = 'timeseries'):
+    def data_to_corr (self, data_dir = None, N_sub= None, type = 'timeseries'):
         
         """load data from the path
         Returns
@@ -78,7 +78,7 @@ class Dls:
         shirnked 2D array
         """
 
-        subject_ids=utils.get_random_files(data_dir,N = N_sub)
+        subject_ids=utils.get_random_files(data_dir, N = N_sub)
 
         assert subject_ids.endswith(".dtseries.nii"), f"File {data_dir} must include only CIFTI time series (.dtseries.nii)"
             
