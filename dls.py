@@ -80,7 +80,7 @@ class Dls:
             
         print('Number of subjects: ',len(set(subject_ids)))
         
-        print('CIFTI Files are: 'subject_ids)
+        print('CIFTI Files are: ', subject_ids)
         
         FIRST_TIME=True
 
