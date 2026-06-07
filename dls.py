@@ -206,7 +206,7 @@ class Gradient:
         self.parcel=utils.up_sample(independent_S, self.correspondence)
         print('Global connectivity components have been estimated by FastICA!')
         L_up= utils.up_sample(self.L, self.correspondence)
-        self.L=utils.up_sample(Ll_up.T, self.correspondence)
+        self.L=utils.up_sample(L_up.T, self.correspondence)
 
         
         self.S = rpca.get_sparse()
