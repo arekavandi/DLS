@@ -4,9 +4,17 @@
 DLS (Dense Connectome to Low-rank and Sparse components) is a framework for modelling whole-brain connectivity topography from resting-state fMRI. It decomposes the dense connectome into low-rank components associated with functional segregation and sparse components that capture connectivity gradients. By combining low-rank + sparse decomposition with embedding methods such as ICA, ISOMAP and UMAP, DLS provides a unified representation of both abrupt and gradual variations in brain connectivity, achieving a more accurate reconstruction of the dense connectome and producing global gradients that closely align with task-based brain organisation.
 
 ## Installation
-Synthetic simulation requires the following Python libraries/packages:
+
+1. Clone the repository:
 ```
-plotly
-matplotlib
-numpy 
-scipy 
+git clone https://github.com/arekavandi/Certified_Robust_Regression.git
+```
+2. Go to the project folder and make a new environment and install the required packages by
+```
+cd Certified_Robust_Regression
+conda env create -f environment.yml
+```
+3. Change the environment
+```
+conda activate cerroreg
+```
