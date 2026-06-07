@@ -11,7 +11,7 @@ def timedemean(matrix):
     column_means = np.mean(matrix, axis=1)
     return (matrix.T - column_means).T
 
-class Dls:
+class Gradient:
     """Dense Connectome to Low-rank + Sparse Components
 
     Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
@@ -66,11 +66,13 @@ class Dls:
 
     """
 
-    def __init__(self, res=0.25, k=2):
+    def __init__(self):
+
+
+    def data_to_corr (self, data_dir = None, N_sub= None, res = 0.25, k = 2, type = 'timeseries'):
+
         self.factor = res
         self.k = k
-
-    def data_to_corr (self, data_dir = None, N_sub= None, type = 'timeseries'):
         
         """load data from the path
         Returns
@@ -79,6 +81,8 @@ class Dls:
         """
 
         subject_ids=utils.get_random_files(data_dir, N = N_sub)
+
+        print(subject_ids)
 
         assert subject_ids.endswith(".dtseries.nii"), f"File {data_dir} must include only CIFTI time series (.dtseries.nii)"
             
