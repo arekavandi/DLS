@@ -66,8 +66,9 @@ class Gradient:
 
     """
 
-    def __init__(self, k=2):
+    def __init__(self, res=0.25, k=2):
         self.k=k
+        self.factor=res
 
     def data_to_corr (self, data_dir = None, N_sub = None, res = 0.25, data_type = 'timeseries'):        
         """load data from the path
