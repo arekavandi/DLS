@@ -71,7 +71,7 @@ class Dls:
         self.k = k
         self.N_sub=N_sub
 
-    def data_to_corr (self, data_dir = None, surface_dir = None, type = 'timeseries'):
+    def data_to_corr (self, data_dir = None, type = 'timeseries'):
         
         """load data from the path
         Returns
@@ -117,8 +117,8 @@ class Dls:
                 sub_data=timedemean(data_array)
                 dataleft=sub_data[leftindices,:]
                 dataright=sub_data[rightindices,:]
-                leftsurf = nib.load(surface_dir/"human.L.inflated.surf.gii")
-                rightsurf= nib.load(surface_dir/"human.R.inflated.surf.gii")
+                leftsurf = nib.load("human.L.inflated.surf.gii")
+                rightsurf= nib.load("human.R.inflated.surf.gii")
             
                 both_hem_data = np.concatenate((dataleft, dataright), axis=0)
                 sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
