@@ -7,11 +7,11 @@ DLS (Dense Connectome to Low-rank and Sparse components) is a framework for mode
 
 1. If you have Git installed, first clone the repository:
 ```
-git clone https://github.com/arekavandi/Certified_Robust_Regression.git
+git clone https://github.com/arekavandi/DLS.git
 ```
 2. Go to the project folder and make a new environment and install the required packages by
 ```
-cd Certified_Robust_Regression
+cd DLS
 conda env create -f environment.yml
 ```
 3. Change the environment
