@@ -1,18 +1,11 @@
-# Authors: Shun Chi (shunchi100@gmail.com)
+# Authors: Aref Miri Rekavandi
 
 import numpy as np
-from tqdm import tqdm
-try:
-    from fbpca import pca
-except ModuleNotFoundError:
-    print('\n install fbpca first: `pip install fbpca` \n')
 
-class RobustPCA:
-    """Robust principal component analysis (Robust PCA)
+class Dls:
+    """Dense Connectome to Low-rank + Sparse Components
 
-    Dimensionality reduction using alternating directions methods
-    to decompose the input 2D matrix M into a lower rank dense 2D matrix L and sparse
-    but not low-rank 2D matrix S.
+    Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
 
     Parametersfbpca.pca
     ----------
@@ -51,19 +44,16 @@ class RobustPCA:
     Attributes:
     -----------
     L : 2D array
-            Lower rank dense 2D matrix
+        Lower rank dense 2D matrix
 
     S : 2D array
         Sparse but not low-rank 2D matrix
 
-    converged : bool
-        Flag shows if the fit is converged or not
-
 
     Reference:
     ----------
-    `Emmanuel J. Candes, Xiaodong Li, Yi Ma, and John Wright`
-    "Robust Principal Component Analysis?"
+    Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
+    
     https://statweb.stanford.edu/~candes/papers/RobustPCA.pdf
 
     """
