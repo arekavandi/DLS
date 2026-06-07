@@ -76,7 +76,6 @@ class Gradient:
         2D array
         """
         self.factor = res
-        self.k = k
         
         subject_ids=utils.get_random_files(data_dir, N = N_sub)
 
