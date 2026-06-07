@@ -147,7 +147,7 @@ class Gradient:
             else:
                 Dense_C_val+=np.corrcoef(sampled_data) 
                 
-            print(f"Loaded {sp} for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
+            print(f"Loaded data for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
             
         Dense_C_train=(2/len(subject_ids))*Dense_C_train
         Dense_C_val=(2/len(subject_ids))*Dense_C_val
