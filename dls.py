@@ -141,6 +141,8 @@ class Dls:
             if i%2==0:
                 Dense_C_train+=np.corrcoef(sampled_data)
             else:
+                Dense_C_val+=np.corrcoef(sampled_data) 
+                
             print(f"Loaded {sp} for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
             
         Dense_C_train=(2/len(subject_ids))*Dense_C_train
