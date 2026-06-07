@@ -76,7 +76,10 @@ class Gradient:
         -------
         2D array
         """
-        
+        if data_dir is None:
+            raise ValueError("You must provide data_dir")
+
+        print("Loading from:", data_dir)
         subject_ids=utils.get_random_files(data_dir, N = N_sub)
 
         print(subject_ids)
