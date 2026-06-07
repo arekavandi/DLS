@@ -189,7 +189,7 @@ class Gradient:
         print(f"Data Concatenation is complete!")
         return Dense_C_train, Dense_C_val
         
-    def fit (self, X, method = 'UMAP', N = 100, g = 2, r = 9, MR = 9, max_iter = 250 ):
+    def fit_transform (self, X, method = 'UMAP', N = 100, g = 2, r = 9, MR = 9, max_iter = 250 ):
         rpca = RobustPCA(max_rank=MR,max_iter=250,tol=0.00001*X.shape[0]*X.shape[1],use_fbpca=True)
         rpca.fit(X)
         self.L = rpca.get_low_rank()
