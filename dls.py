@@ -57,16 +57,20 @@ class Dls:
 
     """
 
-    def __init__(self, lamb=None, mu=None, max_rank=None, tol=1e-6, max_iter=100, use_fbpca=False, fbpca_rank_ratio=0.2):
-        self.lamb = lamb
+    def __init__(self, res=0.25, k=2, N_sub=2):
+        self.factor = res
+        self.k = k
+        self.N_sub=N_sub
 
-    def corr_load (self, X, tau):
+    def corr_load (self, dir = None, type = 'timeseries'):
         
         """load data from the path
         Returns
         -------
         shirnked 2D array
         """
+
+        
         return X
     def fit (self, X):
         return X
