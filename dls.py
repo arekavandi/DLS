@@ -1,4 +1,4 @@
-# Authors: Aref Miri Rekavandi
+# Author: Aref Miri Rekavandi
 
 import nibabel as nib
 import numpy as np
