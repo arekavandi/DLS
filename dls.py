@@ -84,7 +84,8 @@ class Gradient:
 
         print(subject_ids)
 
-        assert subject_ids.endswith(".dtseries.nii"), f"File {data_dir} must include only CIFTI time series (.dtseries.nii)"
+        assert all(f.endswith(".dtseries.nii") for f in subject_ids), \
+        "All files must be CIFTI time series (.dtseries.nii)"
             
         print('Number of subjects: ',len(set(subject_ids)))
         
