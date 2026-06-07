@@ -41,8 +41,6 @@ def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=True):
         d_pca = n_dim
 
     print('...Starting MIGP')
-    t = timer()
-    t.tic()
     _, N = C.shape
     #random_idx = np.random.permutation(N)
     #Cview = C[:, random_idx]
@@ -65,7 +63,6 @@ def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=True):
 
     print(f'...Old matrix size : {C.shape[0]}x{C.shape[1]}')
     print(f'...New matrix size : {data.shape[0]}x{data.shape[1]}')
-    print(f'...MIGP done in {t.toc()} secs.')
     return data,proj_mat,C_mean
 
 class Gradient:
