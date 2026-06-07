@@ -54,7 +54,7 @@ def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=True):
     Cview=demean(Cview)
     proj_mat=[]
     W = None
-    for i in tqdm(range(0,N,n_dim)):
+    for i in tqdm.tqdm(range(0,N,n_dim)):
         data = Cview[:, i:min(i+n_dim, N+1)].T  # transpose to get time as 1st dimension
         if W is not None:
             W = np.concatenate((W, (data)), axis=0)
