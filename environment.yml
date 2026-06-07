@@ -9,7 +9,6 @@ dependencies:
   - umap-learn
   - matplotlib
   - scikit-image
-  - brainspace
   - nibabel
   - pip
   - pip:
