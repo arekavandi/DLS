@@ -11,7 +11,7 @@ dependencies:
   - scikit-image
   - brainspace
   - nibabel
-    - pip
+  - pip
   - pip:
       - git+https://github.com/arekavandi/RobustPCA.git
       - git+https://github.com/arekavandi/utils_gradients.git
