@@ -200,7 +200,7 @@ class Gradient:
         self.L = rpca.get_low_rank()
     
         pca_approx_dense,proj,C_mean=matrix_MIGP(self.L,n_dim=500, d_pca=r)
-        ica = FastICA(n_components=M_ICA,max_iter=2000,tol=0.0005)
+        ica = FastICA(n_components=r,max_iter=2000,tol=0.0005)
         independent_S =ica.fit_transform(pca_approx_dense)
         independent_A =ica.mixing_
         self.parcel=utils.up_sample(independent_S, self.correspondence)
