@@ -74,38 +74,7 @@ class Gradient:
 
     Parameters
     ----------
-    lamb : positive float
-        Sparse component coefficient.
-        if user doesn't set it:
-            lamb = 1/sqrt(max(M.shape))
-        A effective default value from the reference.
-
-    mu : positive float
-        Coefficient for augmented lagrange multiplier
-        if user doesn't set it:
-            n1, n2 = M.shape
-            mu = n1*n2/4/norm1(M) # norm1(M) is M's l1-norm
-        A effective default value from the reference.
-
-    max_rank : positive int
-        The maximum rank allowed in the low rank matrix
-        default is None --> no limit to the rank of the low
-        rank matrix.
-
-    tol : positive float
-        Convergence tolerance
-
-    max_iter : positive int
-        Maximum iterations for alternating updates
-
-    use_fbpca : bool
-        Determine if use fbpca for SVD. fbpca use Fast Randomized SVDself.
-        default is False
-
-    fbpca_rank_ratio : float, between (0, 1]
-        If max_rank is not given, this sets the rank for fbpca.pca()
-        fbpca_rank = int(fbpca_rank_ratio * min(M.shape))
-
+    
     Attributes:
     -----------
     L : 2D array
@@ -128,7 +97,7 @@ class Gradient:
         self.L = None
         self.S = None
         self.grad = None
-        self.global = None
+        self.parcel = None
         self.correspondence = None
         self.indices_picked = None
 
@@ -229,7 +198,7 @@ class Gradient:
         ica = FastICA(n_components=M_ICA,max_iter=2000,tol=0.0005)
         independent_S =ica.fit_transform(pca_approx_dense)
         independent_A =ica.mixing_
-        self.global=utils.up_sample(independent_S, self.correspondence)
+        self.parcel=utils.up_sample(independent_S, self.correspondence)
         print('Global connectivity components have been estimated by FastICA!')
         L_up= utils.up_sample(self.L, correspondence)
         self.L=utils.up_sample(Ll_up.T, correspondence)
