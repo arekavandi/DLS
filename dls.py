@@ -95,7 +95,7 @@ class Gradient:
 
         for i,subject_id in enumerate(subject_ids):
             
-            data_file = data_dir / subject_id
+            data_file = Path(data_dir) / subject_id
             
             values = nib.load(data_file)
 
