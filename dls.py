@@ -5,11 +5,64 @@ import numpy as np
 from pathlib import Path
 import random
 from functions import utils_gradients as utils
+from RobustPCA.rpca import RobustPCA
 
 def timedemean(matrix):
     # Calculate the mean of each column
     column_means = np.mean(matrix, axis=1)
     return (matrix.T - column_means).T
+    
+def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=True):
+    """Apply incremental PCA to C
+    Inputs:
+    C (2D array) : should be wide i.e. nxN where N bigger than n
+    We pretend that the matrix C is made of column blocks, each block is
+    one 'subject', and 'time' is the column dimension.
+
+    n_dim (int)  : C is split up into nXn_dim matrices
+    n_pca (int)  : maximum number of pcs kept (set to n_dim if larger than n_dim)
+    keep_mean (bool) : keep the mean of C
+
+    Returns:
+    reduced version of C (size nxmin(n_dim,n_pca)
+    """
+    # Random order for columns of C (create a view rather than copy the data)
+
+    if keep_mean:
+        C_mean = np.mean(C, axis=0, keepdims=True)
+        print('mean shape: ',C_mean.shape)
+        #raise(Exception('Not implemented keep_mean yet!'))
+
+    if d_pca > n_dim:
+        d_pca = n_dim
+
+    print('...Starting MIGP')
+    t = timer()
+    t.tic()
+    _, N = C.shape
+    #random_idx = np.random.permutation(N)
+    #Cview = C[:, random_idx]
+    Cview = C.copy()
+    Cview=demean(Cview)
+    proj_mat=[]
+    W = None
+    for i in tqdm(range(0,N,n_dim)):
+        data = Cview[:, i:min(i+n_dim, N+1)].T  # transpose to get time as 1st dimension
+        if W is not None:
+            W = np.concatenate((W, (data)), axis=0)
+        else:
+            W = (data)
+        k = min(d_pca, n_dim)
+        _, U  = eigsh(W@W.T, k)
+
+        W = U.T@W
+        proj_mat.append(U)
+    data = W[:min(W.shape[0], d_pca), :].T
+
+    print(f'...Old matrix size : {C.shape[0]}x{C.shape[1]}')
+    print(f'...New matrix size : {data.shape[0]}x{data.shape[1]}')
+    print(f'...MIGP done in {t.toc()} secs.')
+    return data,proj_mat,C_mean
 
 class Gradient:
     """Dense Connectome to Low-rank + Sparse Components
@@ -69,6 +122,9 @@ class Gradient:
     def __init__(self, res=0.25, k=2):
         self.k=k
         self.factor=res
+        self.L = None
+        self.S = None
+        self.g = None
 
     def data_to_corr (self, data_dir = None, N_sub = None, data_type = 'timeseries'):        
         """load data from the path
@@ -158,7 +214,22 @@ class Gradient:
         print(f"Data Concatenation is complete!")
         return Dense_C_train, Dense_C_val
         
-    def fit (self, X):
+    def fit (self, X, g = 2, r = 9, MR = 9, max_iter = 250 ):
+        rpca = RobustPCA(max_rank=MR,max_iter=250,tol=0.00001*X.shape[0]*X.shape[1],use_fbpca=True)
+        rpca.fit(X)
+        self.L = rpca.get_low_rank()
+        L_up= utils.up_sample(self.L, correspondence)
+        self.L=utils.up_sample(Ll_up.T, correspondence)
+    
+        pca_approx_dense,proj,C_mean=matrix_MIGP(Ll,n_dim=500, d_pca=M_ICA)
+        ica = FastICA(n_components=M_ICA,max_iter=2000,tol=0.0005)
+        independent_S =ica.fit_transform(pca_approx_dense)
+        independent_A =ica.mixing_
+
+        
+        self.S = rpca.get_sparse()
+        S_up= utils.up_sample(self.S, correspondence)
+        self.S=utils.up_sample(S_up.T, correspondence)
         return X
         
         
