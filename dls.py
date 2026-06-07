@@ -7,6 +7,8 @@ import random
 from functions import utils_gradients as utils
 from RobustPCA.rpca import RobustPCA
 from sklearn.decomposition import FastICA
+from sklearn.manifold import Isomap
+import umap
 
 def timedemean(matrix):
     # Calculate the mean of each column
@@ -218,7 +220,7 @@ class Gradient:
         print(f"Data Concatenation is complete!")
         return Dense_C_train, Dense_C_val
         
-    def fit (self, X, method = 'UMAP', N = 150, g = 2, r = 9, MR = 9, max_iter = 250 ):
+    def fit (self, X, method = 'UMAP', N = 100, g = 2, r = 9, MR = 9, max_iter = 250 ):
         rpca = RobustPCA(max_rank=MR,max_iter=250,tol=0.00001*X.shape[0]*X.shape[1],use_fbpca=True)
         rpca.fit(X)
         self.L = rpca.get_low_rank()
@@ -233,9 +235,20 @@ class Gradient:
 
         
         self.S = rpca.get_sparse()
-        if method.lower() == 'umap':
+        if method.lower() == 'isomap':
+            print(f'Running ISOMAP with N_neighbor={N}...')
+            embedded_I = Isomap(n_components=g,n_neighbors=N).fit_transform(self.S)
+            self.grad=utils.up_sample(embedded_I, self.correspondence)
+            print(f'Gradients have been estimated!')
+        elif method.lower() == 'umap':
+            print(f'Running UMAP with N_neighbor={N}...')
+            embedded_U = umap.UMAP(n_components=g, metric='euclidean',n_neighbors=N).fit_transform(self.S)
+            self.grad=utils.up_sample(embedded_U, self.correspondence)
+            print(f'Gradients have been estimated!')
+        else:
+            raise ValueError("You must use either ISOMAP or UMAP for gradient estimation method!")
             
-        
+            
         S_up= utils.up_sample(self.S, self.correspondence)
         self.S=utils.up_sample(S_up.T, self.correspondence)
         
