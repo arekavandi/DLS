@@ -127,6 +127,8 @@ class Gradient:
         self.S = None
         self.grad = None
         self.global = None
+        self.correspondence = None
+        self.indices_picked = None
 
     def data_to_corr (self, data_dir = None, N_sub = None, data_type = 'timeseries'):        
         """load data from the path
@@ -183,14 +185,14 @@ class Gradient:
                 rightsurf= nib.load("human.R.inflated.surf.gii")
             
                 both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
+                sampled_data,self.correspondence,self.indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
             
             else:
                 sub_data=timedemean(data_array)
                 dataleft=sub_data[leftindices,:]
                 dataright=sub_data[rightindices,:]
                 both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
+                sampled_data,self.correspondence,self.indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), self.correspondence, self.indices_picked)
             
             
             if FIRST_TIME:
@@ -220,13 +222,15 @@ class Gradient:
         rpca = RobustPCA(max_rank=MR,max_iter=250,tol=0.00001*X.shape[0]*X.shape[1],use_fbpca=True)
         rpca.fit(X)
         self.L = rpca.get_low_rank()
-        L_up= utils.up_sample(self.L, correspondence)
-        self.L=utils.up_sample(Ll_up.T, correspondence)
     
-        pca_approx_dense,proj,C_mean=matrix_MIGP(Ll,n_dim=500, d_pca=M_ICA)
+        pca_approx_dense,proj,C_mean=matrix_MIGP(self.L,n_dim=500, d_pca=r)
         ica = FastICA(n_components=M_ICA,max_iter=2000,tol=0.0005)
         independent_S =ica.fit_transform(pca_approx_dense)
         independent_A =ica.mixing_
+        self.global=utils.up_sample(independent_S, correspondence)
+
+        L_up= utils.up_sample(self.L, correspondence)
+        self.L=utils.up_sample(Ll_up.T, correspondence)
 
         
         self.S = rpca.get_sparse()
