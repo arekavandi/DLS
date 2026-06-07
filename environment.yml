@@ -1,7 +1,7 @@
 name: dls
 channels:
   - pytorch
-  - anaconda
+  - conda-forge
 dependencies:
   - numpy
   - scipy
