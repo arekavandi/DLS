@@ -66,7 +66,7 @@ class Dls:
         self.k = k
         self.N_sub=N_sub
 
-    def data_to_corr (self, dir = None, type = 'timeseries'):
+    def data_to_corr (self, data_dir = None, surface_dir = None, type = 'timeseries'):
         
         """load data from the path
         Returns
@@ -74,9 +74,9 @@ class Dls:
         shirnked 2D array
         """
 
-        subject_ids=utils.get_random_files(base_dir,N=N_sub)
+        subject_ids=utils.get_random_files(data_dir,N=N_sub)
 
-        assert subject_ids.endswith(".dtseries.nii"), f"File {dir} must include only CIFTI time series (.dtseries.nii)"
+        assert subject_ids.endswith(".dtseries.nii"), f"File {data_dir} must include only CIFTI time series (.dtseries.nii)"
             
         print('Number of subjects: ',len(set(subject_ids)))
         
@@ -85,89 +85,60 @@ class Dls:
         FIRST_TIME=True
 
         for i,subject_id in enumerate(subject_ids):
-            # Construct the directory path for the current subject
-            dirname = Path(base_dir) / subject_id / 'MNINonLinear' / 'Results' / 'rfMRI_REST1_LR'
-    
-            # Construct the filename
-            if data_type == 'dense':
-                filename = sp + '.dconn.nii'
-                # Load the data file
-                data_file = dirname / filename
-                if not data_file.exists():
-                    print(f"File not found for subject {subject_id}: {data_file}")
-                    continue
-    
-                values = nib.load(data_file)
-    
-                # Extract data and append to the list
-                data_array = np.array(values.get_fdata().T, dtype=np.float64)
-                concatenated_data.append(data_array)
-    
-                print(f"Loaded {sp} for subject {subject_id}: {data_array.shape}")
+            
+            data_file = data_dir / subject_id
+            
+            values = nib.load(data_file)
+
+            # Extract data and append to the list
+            data_array = np.array(values.get_fdata().T, dtype=np.float64)
+            
+            if FIRST_TIME:
+                # Map indices for left and right hemispheres
+                map_left = 1
+                map_right = 2
+                pointer = 1
+                indices_for_left = values.header.matrix._mims[pointer]._maps[map_left]._vertex_indices
+                indices_for_right = values.header.matrix._mims[pointer]._maps[map_right]._vertex_indices
+                Nvleft = values.header.matrix._mims[pointer]._maps[map_left].surface_number_of_vertices  #1*32492
+                left_offset = values.header.matrix._mims[pointer]._maps[map_left].index_offset
+                Nvright = values.header.matrix._mims[pointer]._maps[map_right].surface_number_of_vertices  #1*32492
+                right_offset = values.header.matrix._mims[pointer]._maps[map_right].index_offset
+                leftindices=list(range(left_offset,left_offset+len(indices_for_left)))
+                rightindices=list(range(right_offset,right_offset+len(indices_for_right)))
+                fakerightindices=list(range(len(indices_for_right)))
+                
+            if i==0:
+                sub_data=timedemean(data_array)
+                dataleft=sub_data[leftindices,:]
+                dataright=sub_data[rightindices,:]
+                leftsurf = nib.load(surface_dir/"human.L.inflated.surf.gii")
+                rightsurf= nib.load(surface_dir/"human.R.inflated.surf.gii")
+            
+                both_hem_data = np.concatenate((dataleft, dataright), axis=0)
+                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
+            
+                #sampled_data,correspondence,indices_picked=utils.down_sample(dataleft,factor, k, leftsurf.darrays[0].data[indices_for_left,:] )
             else:
-                filename = sp + '.dtseries.nii'
-    
-                # Load the data file
-                data_file = dirname / filename
-                if not data_file.exists():
-                    print(f"File not found for subject {subject_id}: {data_file}")
-                    continue
-    
-                values = nib.load(data_file)
-    
-                # Extract data and append to the list
-                data_array = np.array(values.get_fdata().T, dtype=np.float64)
-                if FIRST_TIME:
-                    # Map indices for left and right hemispheres
-                    map_left = 1
-                    map_right = 2
-                    if data_type == 'dense':
-                        pointer = 0
-                    else:
-                        pointer = 1
-                    indices_for_left = values.header.matrix._mims[pointer]._maps[map_left]._vertex_indices
-                    indices_for_right = values.header.matrix._mims[pointer]._maps[map_right]._vertex_indices
-                    Nvleft = values.header.matrix._mims[pointer]._maps[map_left].surface_number_of_vertices  #1*32492
-                    left_offset = values.header.matrix._mims[pointer]._maps[map_left].index_offset
-                    Nvright = values.header.matrix._mims[pointer]._maps[map_right].surface_number_of_vertices  #1*32492
-                    right_offset = values.header.matrix._mims[pointer]._maps[map_right].index_offset
-                    leftindices=list(range(left_offset,left_offset+len(indices_for_left)))
-                    rightindices=list(range(right_offset,right_offset+len(indices_for_right)))
-                    fakerightindices=list(range(len(indices_for_right)))
-                    
-                if i==0:
-                    sub_data=timedemean(data_array)
-                    dataleft=sub_data[leftindices,:]
-                    dataright=sub_data[rightindices,:]
-                    leftsurf = nib.load("/home/fs0/bsg097/scratch/human.L.inflated.surf.gii")
-                    rightsurf= nib.load("/home/fs0/bsg097/scratch/human.R.inflated.surf.gii")
-                
-                    both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                    sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
-                
-                    #sampled_data,correspondence,indices_picked=utils.down_sample(dataleft,factor, k, leftsurf.darrays[0].data[indices_for_left,:] )
-                else:
-                    sub_data=timedemean(data_array)
-                    dataleft=sub_data[leftindices,:]
-                    dataright=sub_data[rightindices,:]
-                    both_hem_data = np.concatenate((dataleft, dataright), axis=0)
-                    sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
-                
-                
-                if FIRST_TIME:
-                    Dense_C=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
-                    Dense_C_train=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
-                    Dense_C_val=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
-                    FIRST_TIME=False
-                Dense_C+=(1/len(subject_ids))*np.corrcoef(sampled_data)
-                #Dense_C+=(1/len(subject_ids))*sampled_data@sampled_data.T
-                if i%2==0:
-                    Dense_C_train+=np.corrcoef(sampled_data)
-                    #Dense_C_train+=sampled_data@sampled_data.T
-                else:
-                    Dense_C_val+=np.corrcoef(sampled_data) 
-                    #Dense_C_val+=sampled_data@sampled_data.T
-                print(f"Loaded {sp} for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
+                sub_data=timedemean(data_array)
+                dataleft=sub_data[leftindices,:]
+                dataright=sub_data[rightindices,:]
+                both_hem_data = np.concatenate((dataleft, dataright), axis=0)
+                sampled_data,correspondence,indices_picked=utils.down_sample(both_hem_data,factor, k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0), correspondence, indices_picked)
+            
+            
+            if FIRST_TIME:
+                Dense_C=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
+                Dense_C_train=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
+                Dense_C_val=np.zeros((sampled_data.shape[0],sampled_data.shape[0]))
+                FIRST_TIME=False
+            Dense_C+=(1/len(subject_ids))*np.corrcoef(sampled_data)
+
+            if i%2==0:
+                Dense_C_train+=np.corrcoef(sampled_data)
+            else:
+            print(f"Loaded {sp} for subject {subject_id} with sampled connectivity: {Dense_C.shape}")
+            
         Dense_C_train=(2/len(subject_ids))*Dense_C_train
         Dense_C_val=(2/len(subject_ids))*Dense_C_val
         full_corr_train_val=np.corrcoef(Dense_C_train.flatten(),Dense_C_val.flatten())[0,1]
