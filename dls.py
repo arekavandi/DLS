@@ -218,7 +218,7 @@ class Gradient:
         print(f"Data Concatenation is complete!")
         return Dense_C_train, Dense_C_val
         
-    def fit (self, X, g = 2, r = 9, MR = 9, max_iter = 250 ):
+    def fit (self, X, method = 'UMAP', N = 150, g = 2, r = 9, MR = 9, max_iter = 250 ):
         rpca = RobustPCA(max_rank=MR,max_iter=250,tol=0.00001*X.shape[0]*X.shape[1],use_fbpca=True)
         rpca.fit(X)
         self.L = rpca.get_low_rank()
@@ -227,16 +227,18 @@ class Gradient:
         ica = FastICA(n_components=M_ICA,max_iter=2000,tol=0.0005)
         independent_S =ica.fit_transform(pca_approx_dense)
         independent_A =ica.mixing_
-        self.global=utils.up_sample(independent_S, correspondence)
-
+        self.global=utils.up_sample(independent_S, self.correspondence)
         L_up= utils.up_sample(self.L, correspondence)
         self.L=utils.up_sample(Ll_up.T, correspondence)
 
         
         self.S = rpca.get_sparse()
-        S_up= utils.up_sample(self.S, correspondence)
-        self.S=utils.up_sample(S_up.T, correspondence)
-        return X
+        if method.lower() == 'umap':
+            
+        
+        S_up= utils.up_sample(self.S, self.correspondence)
+        self.S=utils.up_sample(S_up.T, self.correspondence)
+        
         
         
 
