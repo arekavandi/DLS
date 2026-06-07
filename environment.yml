@@ -4,6 +4,7 @@ channels:
   - conda-forge
 dependencies:
   - numpy
+  - tqdm
   - scipy
   - scikit-learn
   - umap-learn
