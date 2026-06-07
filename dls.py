@@ -6,6 +6,7 @@ from pathlib import Path
 import random
 from functions import utils_gradients as utils
 from RobustPCA.rpca import RobustPCA
+from sklearn.decomposition import FastICA
 
 def timedemean(matrix):
     # Calculate the mean of each column
@@ -124,7 +125,8 @@ class Gradient:
         self.factor=res
         self.L = None
         self.S = None
-        self.g = None
+        self.grad = None
+        self.global = None
 
     def data_to_corr (self, data_dir = None, N_sub = None, data_type = 'timeseries'):        
         """load data from the path
