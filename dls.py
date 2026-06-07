@@ -15,6 +15,11 @@ def timedemean(matrix):
     # Calculate the mean of each column
     column_means = np.mean(matrix, axis=1)
     return (matrix.T - column_means).T
+
+
+def demean(X, axis=0):
+   # print(np.mean(X, axis=axis, keepdims=True).shape)
+    return X - np.mean(X, axis=axis, keepdims=True)
     
 def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=True):
     """Apply incremental PCA to C
