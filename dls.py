@@ -70,13 +70,12 @@ class Gradient:
         self.k=k
         self.factor=res
 
-    def data_to_corr (self, data_dir = None, N_sub = None, res = 0.25, data_type = 'timeseries'):        
+    def data_to_corr (self, data_dir = None, N_sub = None, data_type = 'timeseries'):        
         """load data from the path
         Returns
         -------
         2D array
         """
-        self.factor = res
         
         subject_ids=utils.get_random_files(data_dir, N = N_sub)
 
