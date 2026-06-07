@@ -10,6 +10,7 @@ from sklearn.decomposition import FastICA
 from sklearn.manifold import Isomap
 import umap
 import time
+import tqdm
 
 def timedemean(matrix):
     # Calculate the mean of each column
