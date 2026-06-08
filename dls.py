@@ -316,7 +316,7 @@ class DLSModel:
             mymap = np.full(self.Nvright, np.nan)
             mymap[self.indices_for_right]=self.grads[len(self.indices_for_left):,idx]-np.nanpercentile(self.grads[:,idx],0)
             view = plotting.view_surf(surf_mesh = 'human.R.inflated.surf.gii', symmetric_cmap=False,
-                   surf_map  = mymap, vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(embedded_Il_n1[:,idx],0)),
+                   surf_map  = mymap, vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(self.grads[:,idx],0)),
                    cmap      = cc.m_rainbow)
             return view
         else:
@@ -330,8 +330,8 @@ class DLSModel:
             print(f'{idx+1}-Parcel: Left Hemisphere')
             mymap = np.full(self.Nvleft, np.nan)
             mymap[self.indices_for_left]=self.parcels[:len(self.indices_for_left),idx]  
-            grotmax=np.nanpercentile(self.parcels[:len(indices_for_left),idx],100)
-            grotmin=np.nanpercentile(self.parcels[:len(indices_for_left),idx],0)
+            grotmax=np.nanpercentile(self.parcels[:len(self.indices_for_left),idx],100)
+            grotmin=np.nanpercentile(self.parcels[:len(self.indices_for_left),idx],0)
             view = plotting.view_surf(surf_mesh = 'human.L.inflated.surf.gii', symmetric_cmap=False,
                                surf_map  = mymap, vmin=grotmin, vmax=grotmax, cmap = 'coolwarm')
             return view
@@ -339,8 +339,8 @@ class DLSModel:
             print(f'{idx+1}-Parcel: Right Hemisphere')
             mymap = np.full(self.Nvright, np.nan)
             mymap[self.indices_for_right]=self.parcels[len(self.indices_for_left):,idx]
-            grotmax=np.nanpercentile(self.parcels[len(indices_for_left):,idx],100)
-            grotmin=np.nanpercentile(self.parcels[len(indices_for_left):,idx],0)
+            grotmax=np.nanpercentile(self.parcels[len(self.indices_for_left):,idx],100)
+            grotmin=np.nanpercentile(self.parcels[len(self.indices_for_left):,idx],0)
             view = plotting.view_surf(surf_mesh = 'human.R.inflated.surf.gii', symmetric_cmap=False,
                    surf_map  = mymap, vmin=grotmin, vmax=grotmax, cmap = 'coolwarm')
             return view
