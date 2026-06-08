@@ -339,8 +339,8 @@ class DLSModel:
             print(f'{idx+1}-Parcel: Right Hemisphere')
             mymap = np.full(self.Nvright, np.nan)
             mymap[self.indices_for_right]=self.parcels[len(self.indices_for_left):,idx]
-            grotmax=np.nanpercentile(self.parcels[len(indices_for_left),idx]:,100)
-            grotmin=np.nanpercentile(self.parcels[len(indices_for_left),idx]:,0)
+            grotmax=np.nanpercentile(self.parcels[len(indices_for_left):,idx],100)
+            grotmin=np.nanpercentile(self.parcels[len(indices_for_left):,idx],0)
             view = plotting.view_surf(surf_mesh = 'human.R.inflated.surf.gii', symmetric_cmap=False,
                    surf_map  = mymap, vmin=grotmin, vmax=grotmax, cmap = 'coolwarm')
             return view
