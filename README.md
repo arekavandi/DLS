@@ -33,8 +33,5 @@ This notebook is recommended for users who want to understand the methodology an
 
 ### Real Data Analysis
 
-For real neuroimaging datasets (e.g., HCP CIFTI time-series data), users should use the:
-
-```python
-DLSModel
+For real neuroimaging datasets (e.g., HCP CIFTI time-series data), users should use the `DLSModel()` class. 
 
