@@ -267,6 +267,28 @@ class Gradient:
         else:
             raise ValueError("Please select either right or left!")
 
+    def vis_parcels (self, side = 'left', idx=0):
+        if idx > self.grads.shape[1]:
+            raise ValueError("Please pick the right index within the range!")
+        if side.lower() == 'left':
+            print(f'{idx+1}-Gradient: Left Hemisphere')
+            mymap = np.full(self.Nvleft, np.nan)
+            mymap[self.indices_for_left]=self.grads[:len(self.indices_for_left),idx]-np.percentile(self.grads[:,idx],0)   
+            view = plotting.view_surf(surf_mesh = 'human.L.inflated.surf.gii', symmetric_cmap=False,
+                               surf_map  = mymap,vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(self.grads[:,idx],0)),
+                               cmap      =  cc.m_rainbow)
+            return view
+        elif side.lower() == 'right':
+            print(f'{idx+1}-Gradient: Right Hemisphere')
+            mymap = np.full(self.Nvright, np.nan)
+            mymap[self.indices_for_right]=self.grads[len(self.indices_for_left):,idx]-np.nanpercentile(self.grads[:,idx],0)
+            view = plotting.view_surf(surf_mesh = 'human.R.inflated.surf.gii', symmetric_cmap=False,
+                   surf_map  = mymap, vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(embedded_Il_n1[:,idx],0)),
+                   cmap      = cc.m_rainbow)
+            return view
+        else:
+            raise ValueError("Please select either right or left!")
+
                 
                 
                 
