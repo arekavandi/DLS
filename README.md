@@ -18,3 +18,7 @@ conda env create -f environment.yml
 ```
 conda activate dls
 ```
+### Simulated Data Tutorial
+
+The notebook:
+
