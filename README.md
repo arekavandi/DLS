@@ -20,13 +20,9 @@ conda activate dls
 ```
 ### Simulated Data Tutorial
 
-The notebook `simulated.ipynb` is designed primarily for **learning and demonstration purposes**. It provides a step-by-step walkthrough of the DLS framework using simulated data and includes comparisons with alternative methods.
+The notebook `simulated.ipynb` is designed primarily for **learning and demonstration purposes**. It provides a step-by-step walkthrough of the DLS framework using simulated data and includes comparisons with alternative methods. This notebook directly calls the internal functions used by the `DLSModel` class, allowing users to inspect each stage of the pipeline individually, including:
 
-To maximize transparency and educational value, this notebook directly calls the internal functions used by the `DLSModel` class, allowing users to inspect each stage of the pipeline individually, including:
-
-- Dense connectivity estimation
 - Low-rank and sparse decomposition
-- Incremental PCA (MIGP)
 - Spatial ICA estimation
 - Gradient estimation (UMAP/ISOMAP)
 - Comparisons with existing approaches
