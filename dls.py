@@ -18,11 +18,6 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 import colorcet as cc
 
 
-def timedemean(matrix):
-    # Calculate the mean of each column
-    column_means = np.mean(matrix, axis=1)
-    return (matrix.T - column_means).T
-
 
 def demean(X, axis=0):
    # print(np.mean(X, axis=axis, keepdims=True).shape)
