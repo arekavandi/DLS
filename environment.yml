@@ -14,6 +14,7 @@ dependencies:
   - nilearn
   - colorcet
   - notebook
+  - brainspace
   - pip
   - pip:
       - git+https://github.com/arekavandi/RobustPCA.git
