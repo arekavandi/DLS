@@ -18,21 +18,76 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 import colorcet as cc
 
 
-class Gradient:
-    """Dense Connectome to Low-rank + Sparse Components
+class DLSModel:
+    """
+    Dense Connectome to Low-rank + Sparse Components (DLS)
 
-    Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients
+    Brain Connectivity Modelling Through Joint Estimation of
+    Parcels and Gradients.
+
+    DLS decomposes a dense functional connectivity matrix into
+    low-rank and sparse components using Robust PCA. The low-rank
+    component is used to estimate spatial parcels via ICA, while
+    the sparse component is used to estimate cortical gradients
+    via manifold learning (UMAP or ISOMAP).
 
     Parameters
     ----------
-    
-    Attributes:
-    -----------
-    L : 2D array
-        Lower rank dense 2D matrix
+    res : float, default=0.25
+        Spatial downsampling factor used to reduce the number of
+        cortical vertices prior to connectivity estimation.
 
-    S : 2D array
-        Sparse but not low-rank 2D matrix
+    k : int, default=2
+        Number of nearest neighbours used during spatial
+        downsampling and correspondence mapping.
+
+    Attributes
+    ----------
+    DC_train : ndarray of shape (n_vertices, n_vertices)
+        Group-average dense connectivity matrix estimated from
+        the training subjects.
+
+    DC_val : ndarray of shape (n_vertices, n_vertices)
+        Validation dense connectivity matrix estimated from
+        the held-out subjects.
+
+    Ls : ndarray of shape (n_vertices, n_vertices)
+        Low-rank component (sampled) obtained from Robust PCA.
+
+    Ss : ndarray of shape (n_vertices, n_vertices)
+        Sparse component (sampled) obtained from Robust PCA.
+
+    grads : ndarray of shape (n_vertices, n_gradients)
+        Estimated cortical gradients obtained from the sparse
+        component using UMAP or ISOMAP.
+
+    parcels : ndarray of shape (n_vertices, n_parcels)
+        Estimated parcel maps (spatial ICA components) obtained
+        from the low-rank component.
+
+    correspondence : ndarray
+        Mapping between downsampled vertices and the original
+        cortical mesh used for upsampling.
+
+    indices_picked : ndarray
+        Indices of vertices retained during downsampling.
+
+    Nvleft : int
+        Number of vertices in the left cortical surface mesh.
+
+    Nvright : int
+        Number of vertices in the right cortical surface mesh.
+
+    indices_for_left : ndarray
+        Vertex indices corresponding to the left hemisphere.
+
+    indices_for_right : ndarray
+        Vertex indices corresponding to the right hemisphere.
+
+    factor : float
+        Internal copy of the spatial downsampling factor
+        specified by ``res``.
+
 
     Reference:
     ----------
