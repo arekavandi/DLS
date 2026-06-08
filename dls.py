@@ -110,7 +110,7 @@ class Gradient:
                 fakerightindices=list(range(len(indices_for_right)))
                 
             if i==0:
-                sub_data=timedemean(data_array)
+                sub_data=utils.timedemean(data_array)
                 dataleft=sub_data[leftindices,:]
                 dataright=sub_data[rightindices,:]
                 leftsurf = nib.load("human.L.inflated.surf.gii")
@@ -120,7 +120,7 @@ class Gradient:
                 sampled_data,self.correspondence,self.indices_picked=utils.down_sample(both_hem_data,self.factor, self.k, np.concatenate((leftsurf.darrays[0].data[indices_for_left,:] , 100+rightsurf.darrays[0].data[indices_for_right,:] ), axis=0))
             
             else:
-                sub_data=timedemean(data_array)
+                sub_data=utils.timedemean(data_array)
                 dataleft=sub_data[leftindices,:]
                 dataright=sub_data[rightindices,:]
                 both_hem_data = np.concatenate((dataleft, dataright), axis=0)
