@@ -12,6 +12,24 @@ import umap
 import time
 import tqdm
 from scipy.sparse.linalg import eigsh
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
+
+def add_zoom(ax, img, zoom=6):
+    """Add zoomed inset to an axis."""
+    x1, x2, y1, y2 = 1000, 2000, 2000, 1000
+    region=(x1, x2, y1, y2)
+    # Create zoomed inset
+    axins = zoomed_inset_axes(ax, zoom, loc=3)
+    axins.imshow(img, vmin=ax.images[0].get_clim()[0], vmax=ax.images[0].get_clim()[1])
+    
+    axins.set_xlim(x1, x2)
+    axins.set_ylim(y1, y2)  # invert y-axis
+    axins.set_xticks([])
+    axins.set_yticks([])
+    
+    # Mark the area on the main plot
+    mark_inset(ax, axins, loc1=4, loc2=2, fc="none", ec="red", lw=1)
 
 def timedemean(matrix):
     # Calculate the mean of each column
@@ -225,7 +243,67 @@ class Gradient:
             
         #S_up= utils.up_sample(self.S, self.correspondence)
         #self.S=utils.up_sample(S_up.T, self.correspondence)
+    def vis_DCs(self):
+        fig, axs = plt.subplots(1, 3, figsize=(15, 3))
+        # Plot 1
+        im0 = axs[0].imshow(connectivity_analysis.Ls, vmin=-0.1, vmax=0.3)
+        axs[0].set_title(r'$\hat{\text{L}}$')
+        axs[0].set_xlabel('Nv')
+        axs[0].set_ylabel('Nv')
+        axs[0].set_xticks([])
+        axs[0].set_yticks([])
+        fig.colorbar(im0, ax=axs[0])
+        add_zoom(axs[0], connectivity_analysis.Ls)
         
+        # Plot 2
+        im1 = axs[1].imshow(connectivity_analysis.Ss, vmin=-0.1, vmax=0.1)
+        axs[1].set_title(r'$\hat{\text{S}}$')
+        axs[1].set_xlabel('Nv')
+        axs[1].set_ylabel('Nv')
+        axs[1].set_xticks([])
+        axs[1].set_yticks([])
+        fig.colorbar(im1, ax=axs[1])
+        add_zoom(axs[1], connectivity_analysis.Ss)
         
+        # Plot 3
+        im2 = axs[2].imshow(DC_train, vmin=-0.1, vmax=0.3)
+        axs[2].set_title('DC')
+        axs[2].set_xlabel('Nv')
+        axs[2].set_ylabel('Nv')
+        axs[2].set_xticks([])
+        axs[2].set_yticks([])
+        fig.colorbar(im2, ax=axs[2])
+        add_zoom(axs[2], DC_train)
         
-
+        plt.tight_layout()
+        plt.show()
+        
+        fig, axs = plt.subplots(1, 3, figsize=(15, 3))
+        eigenvalues, eigenvectors=eigsh(connectivity_analysis.Ls,9)
+        ascending_indices = eigenvalues.argsort() 
+        descending_indices = ascending_indices[::-1] 
+        axs[0].plot(eigenvalues[descending_indices], '.', label='Eigvalues')
+        axs[0].set_title(r'Eigen Curve of $\hat{\text{L}}$')
+        axs[0].set_xlabel('Index')
+        axs[0].set_ylabel('Value')
+        
+        eigenvalues, eigenvectors=eigsh(connectivity_analysis.Ss,5*9)
+        ascending_indices = eigenvalues.argsort() 
+        descending_indices = ascending_indices[::-1] 
+        axs[1].plot(eigenvalues[descending_indices], '.', label='Eigvalues')
+        axs[1].set_title(r'Eigen Curve of $\hat{\text{S}}$')
+        axs[1].set_xlabel('Index')
+        axs[1].set_ylabel('Value')
+        
+        eigenvalues, eigenvectors=eigsh(DC_train,5*9)
+        ascending_indices = eigenvalues.argsort() 
+        descending_indices = ascending_indices[::-1] 
+        axs[2].plot(eigenvalues[descending_indices], '.', label='Eigvalues')
+        axs[2].set_title('Eig curve of DC')
+        axs[2].set_xlabel('Index')
+        axs[2].set_ylabel('Value')
+        plt.show()
+                
+                
+                
+        
