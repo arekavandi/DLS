@@ -15,6 +15,7 @@ import tqdm
 from scipy.sparse.linalg import eigsh
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
+import colorcet as cc
 
 def add_zoom(ax, img, zoom=6):
     """Add zoomed inset to an axis."""
