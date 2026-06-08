@@ -99,10 +99,10 @@ class Gradient:
     def __init__(self, res=0.25, k=2):
         self.k=k
         self.factor=res
-        self.L = None
-        self.S = None
-        self.grad = None
-        self.parcel = None
+        self.Ls = None
+        self.Ss = None
+        self.grads = None
+        self.parcels = None
         self.correspondence = None
         self.indices_picked = None
 
@@ -197,34 +197,34 @@ class Gradient:
     def fit_transform (self, X, method = 'UMAP', N = 100, g = 2, r = 9, MR = 9, max_iter = 250 ):
         rpca = RobustPCA(max_rank=MR,max_iter=250,tol=0.00001*X.shape[0]*X.shape[1],use_fbpca=True)
         rpca.fit(X)
-        self.L = rpca.get_low_rank()
+        self.Ls = rpca.get_low_rank()
     
-        pca_approx_dense,proj,C_mean=matrix_MIGP(self.L,n_dim=500, d_pca=r)
+        pca_approx_dense,proj,C_mean=matrix_MIGP(self.Ls,n_dim=500, d_pca=r)
         ica = FastICA(n_components=r,max_iter=2000,tol=0.0005)
         independent_S =ica.fit_transform(pca_approx_dense)
         independent_A =ica.mixing_
-        self.parcel=utils.up_sample(independent_S, self.correspondence)
+        self.parcels=utils.up_sample(independent_S, self.correspondence)
         print('Global connectivity components have been estimated by FastICA!')
-        L_up= utils.up_sample(self.L, self.correspondence)
-        self.L=utils.up_sample(L_up.T, self.correspondence)
+        #L_up= utils.up_sample(self.L, self.correspondence)
+        #self.L=utils.up_sample(L_up.T, self.correspondence)
 
         
-        self.S = rpca.get_sparse()
+        self.Ss = rpca.get_sparse()
         if method.lower() == 'isomap':
             print(f'Running ISOMAP with N_neighbor={N}...')
-            embedded_I = Isomap(n_components=g,n_neighbors=N).fit_transform(self.S)
-            self.grad=utils.up_sample(embedded_I, self.correspondence)
+            embedded_I = Isomap(n_components=g,n_neighbors=N).fit_transform(self.Ss)
+            self.grads=utils.up_sample(embedded_I, self.correspondence)
             print(f'Global connectivity gradients have been estimated by ISOMAP!')
         elif method.lower() == 'umap':
             print(f'Running UMAP with N_neighbor={N}...')
-            embedded_U = umap.UMAP(n_components=g, metric='euclidean',n_neighbors=N).fit_transform(self.S)
-            self.grad=utils.up_sample(embedded_U, self.correspondence)
+            embedded_U = umap.UMAP(n_components=g, metric='euclidean',n_neighbors=N).fit_transform(self.Ss)
+            self.grads=utils.up_sample(embedded_U, self.correspondence)
             print(f'Global connectivity gradients have been estimated by UMAP!')
         else:
             raise ValueError("You must use either ISOMAP or UMAP for gradient estimation method!")
             
-        S_up= utils.up_sample(self.S, self.correspondence)
-        self.S=utils.up_sample(S_up.T, self.correspondence)
+        #S_up= utils.up_sample(self.S, self.correspondence)
+        #self.S=utils.up_sample(S_up.T, self.correspondence)
         
         
         
