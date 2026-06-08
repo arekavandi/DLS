@@ -35,11 +35,11 @@ This notebook is recommended for users who want to understand the methodology an
 
 For real neuroimaging datasets (e.g., HCP CIFTI time-series data), users should use the `DLSModel()` class. 
 
-## DLSModel Class: Summary of Methods
+#### DLSModel Class: Summary of Methods
 
 The `DLSModel` class provides an end-to-end workflow for joint estimation of brain gradients and spatial parcels from dense functional connectivity data. It decomposes connectivity matrices into low-rank and sparse components and uses these to extract meaningful brain features.
 
-### Initialization
+#### Initialization
 
 **`__init__(res=0.25, k=2)`**  
 - **Purpose:** Initialize the model with spatial downsampling and neighborhood parameters.  
@@ -49,7 +49,7 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
 
 ---
 
-### Data Loading
+#### Data Loading
 
 **`data_to_corr(data_dir=None, N_sub=None, data_type='timeseries')`**  
 - **Purpose:** Load CIFTI time-series data and compute group-average dense connectivity matrices.  
@@ -62,7 +62,7 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
 
 ---
 
-### Model Fitting and Transformation
+#### Model Fitting and Transformation
 
 **`fit_transform(X, method='UMAP', N=100, g=2, r=9, MR=9, max_iter=250)`**  
 - **Purpose:** Decompose dense connectivity into low-rank and sparse components, estimate parcels and gradients.  
@@ -81,7 +81,7 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
 
 ---
 
-### Visualization
+#### Visualization
 
 **`vis_DCs()`**  
 - **Purpose:** Visualize low-rank, sparse, and full dense connectivity matrices with eigenvalue curves.  
