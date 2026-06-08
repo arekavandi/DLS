@@ -37,9 +37,9 @@ For real neuroimaging datasets (e.g., HCP CIFTI time-series data), users should 
 
 #### DLSModel Class: Summary of Methods
 
-The `DLSModel` class provides an end-to-end workflow for joint estimation of brain gradients and spatial parcels from dense functional connectivity data. It decomposes connectivity matrices into low-rank and sparse components and uses these to extract meaningful brain features.
+The `DLSModel` class provides an end-to-end workflow for joint estimation of brain gradients and spatial parcels from dense functional connectivity data. It decomposes connectivity matrices into low-rank and sparse components and uses these methods to extract meaningful brain features.
 
-#### Initialization
+#### Initialisation
 
 **`__init__(res=0.25, k=2)`**  
 - **Purpose:** Initialize the model with spatial downsampling and neighborhood parameters.  
@@ -94,7 +94,7 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
 
 - **Simulated data:** The notebook `simulated_data.ipynb` demonstrates internal functions of `DLSModel` for learning and comparison with other methods.  
 - **Real data:** For HCP or other datasets, use `DLSModel` and its full set of methods.  
-- **Step-by-step instructions:** See the notebook `real_data.ipynb` for detailed workflow examples.
+- **Step-by-step instructions:** See the notebook `real_data.ipynb` for detailed workflow examples for the real data experiments.
 
 ---
 # Citations
