@@ -222,6 +222,8 @@ class Gradient:
         print('Train vs Val Full Corr:, ',full_corr_train_val)
         print('Train vs Val Half Corr:, ',half_corr_train_val)
         print(f"Data Concatenation is complete!")
+        self.DC_train = Dense_C_train
+        self.DC_val = Dense_C_val
         return Dense_C_train, Dense_C_val
         
     def fit_transform (self, X, method = 'UMAP', N = 100, g = 2, r = 9, MR = 9, max_iter = 250 ):
