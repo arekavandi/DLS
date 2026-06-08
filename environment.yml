@@ -14,8 +14,8 @@ dependencies:
   - nilearn
   - colorcet
   - notebook
-  - brainspace
   - pip
   - pip:
+      - brainspace
       - git+https://github.com/arekavandi/RobustPCA.git
       - git+https://github.com/arekavandi/utils_gradients.git
