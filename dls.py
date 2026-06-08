@@ -121,6 +121,8 @@ class Gradient:
         self.factor=res
         self.Ls = None
         self.Ss = None
+        self.DC_train = None
+        self.DC_val = None
         self.grads = None
         self.parcels = None
         self.correspondence = None
@@ -253,43 +255,44 @@ class Gradient:
             
         #S_up= utils.up_sample(self.S, self.correspondence)
         #self.S=utils.up_sample(S_up.T, self.correspondence)
+    
     def vis_DCs(self):
         fig, axs = plt.subplots(1, 3, figsize=(15, 3))
         # Plot 1
-        im0 = axs[0].imshow(connectivity_analysis.Ls, vmin=-0.1, vmax=0.3)
+        im0 = axs[0].imshow(self.Ls, vmin=-0.1, vmax=0.3)
         axs[0].set_title(r'$\hat{\text{L}}$')
         axs[0].set_xlabel('Nv')
         axs[0].set_ylabel('Nv')
         axs[0].set_xticks([])
         axs[0].set_yticks([])
         fig.colorbar(im0, ax=axs[0])
-        add_zoom(axs[0], connectivity_analysis.Ls)
+        add_zoom(axs[0], self.Ls)
         
         # Plot 2
-        im1 = axs[1].imshow(connectivity_analysis.Ss, vmin=-0.1, vmax=0.1)
+        im1 = axs[1].imshow(self.Ss, vmin=-0.1, vmax=0.1)
         axs[1].set_title(r'$\hat{\text{S}}$')
         axs[1].set_xlabel('Nv')
         axs[1].set_ylabel('Nv')
         axs[1].set_xticks([])
         axs[1].set_yticks([])
         fig.colorbar(im1, ax=axs[1])
-        add_zoom(axs[1], connectivity_analysis.Ss)
+        add_zoom(axs[1], self.DC_train)
         
         # Plot 3
-        im2 = axs[2].imshow(DC_train, vmin=-0.1, vmax=0.3)
+        im2 = axs[2].imshow(self.DC_train, vmin=-0.1, vmax=0.3)
         axs[2].set_title('DC')
         axs[2].set_xlabel('Nv')
         axs[2].set_ylabel('Nv')
         axs[2].set_xticks([])
         axs[2].set_yticks([])
         fig.colorbar(im2, ax=axs[2])
-        add_zoom(axs[2], DC_train)
+        add_zoom(axs[2], self.DC_train)
         
         plt.tight_layout()
         plt.show()
         
         fig, axs = plt.subplots(1, 3, figsize=(15, 3))
-        eigenvalues, eigenvectors=eigsh(connectivity_analysis.Ls,9)
+        eigenvalues, eigenvectors=eigsh(self.Ls,9)
         ascending_indices = eigenvalues.argsort() 
         descending_indices = ascending_indices[::-1] 
         axs[0].plot(eigenvalues[descending_indices], '.', label='Eigvalues')
@@ -297,7 +300,7 @@ class Gradient:
         axs[0].set_xlabel('Index')
         axs[0].set_ylabel('Value')
         
-        eigenvalues, eigenvectors=eigsh(connectivity_analysis.Ss,5*9)
+        eigenvalues, eigenvectors=eigsh(self.Ss,5*9)
         ascending_indices = eigenvalues.argsort() 
         descending_indices = ascending_indices[::-1] 
         axs[1].plot(eigenvalues[descending_indices], '.', label='Eigvalues')
@@ -305,7 +308,7 @@ class Gradient:
         axs[1].set_xlabel('Index')
         axs[1].set_ylabel('Value')
         
-        eigenvalues, eigenvectors=eigsh(DC_train,5*9)
+        eigenvalues, eigenvectors=eigsh(self.DC_train,5*9)
         ascending_indices = eigenvalues.argsort() 
         descending_indices = ascending_indices[::-1] 
         axs[2].plot(eigenvalues[descending_indices], '.', label='Eigvalues')
@@ -321,9 +324,10 @@ class Gradient:
         mymap = np.full(self.Nvleft, np.nan)
         mymap[self.indices_for_left]=self.grads[:len(self.indices_for_left),idx]-np.percentile(self.grads[:,idx],0)
         
-        plotting.view_surf(surf_mesh = 'human.L.inflated.surf.gii', symmetric_cmap=False,
+        view = plotting.view_surf(surf_mesh = 'human.L.inflated.surf.gii', symmetric_cmap=False,
                            surf_map  = mymap,vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(self.grads[:,idx],0)),
                            cmap      =  cc.m_rainbow)
+        return view
                 
                 
                 
