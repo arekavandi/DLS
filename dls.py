@@ -17,11 +17,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 import colorcet as cc
 
-
-
-def demean(X, axis=0):
-   # print(np.mean(X, axis=axis, keepdims=True).shape)
-    return X - np.mean(X, axis=axis, keepdims=True)
     
 def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=True):
     """Apply incremental PCA to C
