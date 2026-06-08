@@ -322,7 +322,7 @@ class Gradient:
     def vis_grads (self, side = 'left', idx=0):
         if idx > self.grads.shape[1]:
             raise ValueError("Please pick the right index within the range!")
-        if side.lower() == 'left'
+        if side.lower() == 'left':
             print(f'{idx+1}-Gradient: Left Hemisphere')
             mymap = np.full(self.Nvleft, np.nan)
             mymap[self.indices_for_left]=self.grads[:len(self.indices_for_left),idx]-np.percentile(self.grads[:,idx],0)   
