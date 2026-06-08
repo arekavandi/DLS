@@ -17,21 +17,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 import colorcet as cc
 
-def add_zoom(ax, img, zoom=6):
-    """Add zoomed inset to an axis."""
-    x1, x2, y1, y2 = 1000, 2000, 2000, 1000
-    region=(x1, x2, y1, y2)
-    # Create zoomed inset
-    axins = zoomed_inset_axes(ax, zoom, loc=3)
-    axins.imshow(img, vmin=ax.images[0].get_clim()[0], vmax=ax.images[0].get_clim()[1])
-    
-    axins.set_xlim(x1, x2)
-    axins.set_ylim(y1, y2)  # invert y-axis
-    axins.set_xticks([])
-    axins.set_yticks([])
-    
-    # Mark the area on the main plot
-    mark_inset(ax, axins, loc1=4, loc2=2, fc="none", ec="red", lw=1)
 
 def timedemean(matrix):
     # Calculate the mean of each column
@@ -268,7 +253,7 @@ class Gradient:
         axs[0].set_xticks([])
         axs[0].set_yticks([])
         fig.colorbar(im0, ax=axs[0])
-        add_zoom(axs[0], self.Ls)
+        utils.add_zoom(axs[0], self.Ls)
         
         # Plot 2
         im1 = axs[1].imshow(self.Ss, vmin=-0.1, vmax=0.1)
@@ -278,7 +263,7 @@ class Gradient:
         axs[1].set_xticks([])
         axs[1].set_yticks([])
         fig.colorbar(im1, ax=axs[1])
-        add_zoom(axs[1], self.DC_train)
+        utils.add_zoom(axs[1], self.DC_train)
         
         # Plot 3
         im2 = axs[2].imshow(self.DC_train, vmin=-0.1, vmax=0.3)
@@ -288,7 +273,7 @@ class Gradient:
         axs[2].set_xticks([])
         axs[2].set_yticks([])
         fig.colorbar(im2, ax=axs[2])
-        add_zoom(axs[2], self.DC_train)
+        utils.add_zoom(axs[2], self.DC_train)
         
         plt.tight_layout()
         plt.show()
