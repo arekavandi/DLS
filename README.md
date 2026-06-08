@@ -47,8 +47,6 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
   - `res`: float, downsampling factor (default 0.25)  
   - `k`: int, number of nearest neighbors for downsampling (default 2)  
 
----
-
 #### Data Loading
 
 **`data_to_corr(data_dir=None, N_sub=None, data_type='timeseries')`**  
@@ -60,7 +58,6 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
   - `DC_train`, `DC_val`: dense connectivity matrices for training and validation  
 - **Notes:** Automatically downsamples vertices and handles left/right hemispheres.
 
----
 
 #### Model Fitting and Transformation
 
@@ -79,18 +76,17 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
   - `parcels`: spatial ICA components  
   - `grads`: cortical gradients  
 
----
 
-#### Visualization
+#### Visualisation
 
 **`vis_DCs()`**  
-- **Purpose:** Visualize low-rank, sparse, and full dense connectivity matrices with eigenvalue curves.  
+- **Purpose:** Visualise low-rank, sparse, and full dense connectivity matrices with eigenvalue curves.  
 
 **`vis_grads(side='left', idx=0)`**  
-- **Purpose:** Visualize a selected cortical gradient on the left or right hemisphere.  
+- **Purpose:** Visualise a selected cortical gradient on the left or right hemisphere.  
 
 **`vis_parcels(side='left', idx=0)`**  
-- **Purpose:** Visualize a selected parcel (spatial ICA component) on the left or right hemisphere.  
+- **Purpose:** Visualise a selected parcel (spatial ICA component) on the left or right hemisphere.  
 
 ---
 
@@ -99,4 +95,17 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
 - **Simulated data:** The notebook `simulated_data.ipynb` demonstrates internal functions of `DLSModel` for learning and comparison with other methods.  
 - **Real data:** For HCP or other datasets, use `DLSModel` and its full set of methods.  
 - **Step-by-step instructions:** See the notebook `real_data.ipynb` for detailed workflow examples.
+
+---
+# Citations
+If you found this GitHub page helpful, please cite the following paper:
+```
+@article{rekavandi2026certified,
+  title={Brain Connectivity Modelling Through Joint Estimation of Parcels and Gradients},
+  author={Miri Rekavandi, Aref and Jbabdi, Saad and Smith, Stephen M.},
+  journal={bioRxiv},
+  year={2026}
+}
+```
+
 
