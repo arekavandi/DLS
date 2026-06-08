@@ -1,6 +1,7 @@
 # Author: Aref Miri Rekavandi
 
 import nibabel as nib
+from nilearn import plotting 
 import numpy as np
 from pathlib import Path
 import random
@@ -123,6 +124,10 @@ class Gradient:
         self.parcels = None
         self.correspondence = None
         self.indices_picked = None
+        self.Nvleft = None
+        self.Nvright = None
+        self.indices_for_left = None
+        self.indices_for_right = None
 
     def data_to_corr (self, data_dir = None, N_sub = None, data_type = 'timeseries'):        
         """load data from the path
@@ -162,10 +167,14 @@ class Gradient:
                 map_right = 2
                 pointer = 1
                 indices_for_left = values.header.matrix._mims[pointer]._maps[map_left]._vertex_indices
+                self.indices_for_left = indices_for_left
                 indices_for_right = values.header.matrix._mims[pointer]._maps[map_right]._vertex_indices
+                self.indices_for_right = indices_for_right
                 Nvleft = values.header.matrix._mims[pointer]._maps[map_left].surface_number_of_vertices  #1*32492
+                self.Nvleft = Nvleft
                 left_offset = values.header.matrix._mims[pointer]._maps[map_left].index_offset
                 Nvright = values.header.matrix._mims[pointer]._maps[map_right].surface_number_of_vertices  #1*32492
+                self.Nvright = Nvright
                 right_offset = values.header.matrix._mims[pointer]._maps[map_right].index_offset
                 leftindices=list(range(left_offset,left_offset+len(indices_for_left)))
                 rightindices=list(range(right_offset,right_offset+len(indices_for_right)))
@@ -303,6 +312,17 @@ class Gradient:
         axs[2].set_xlabel('Index')
         axs[2].set_ylabel('Value')
         plt.show()
+        
+    def vis_grads_left (self, idx=1):
+        if idx > self.grads.shape[1]:
+            raise ValueError("Please pick the right index within the range!")
+        print(f'{idx+1}-Gradient: Left Hemisphere')
+        mymap = np.full(self.Nvleft, np.nan)
+        mymap[self.indices_for_left]=self.grads[:len(self.indices_for_left),idx]-np.percentile(self.grads[:,idx],0)
+        
+        plotting.view_surf(surf_mesh = './human.L.inflated.surf.gii', symmetric_cmap=False,
+                           surf_map  = mymap,vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(self.grads[:,idx],0)),
+                           cmap      =  cc.m_rainbow)
                 
                 
                 
