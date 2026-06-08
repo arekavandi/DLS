@@ -42,7 +42,7 @@ The `DLSModel` class provides an end-to-end workflow for joint estimation of bra
 #### Initialisation
 
 **`__init__(res=0.25, k=2)`**  
-- **Purpose:** Initialize the model with spatial downsampling and neighborhood parameters.  
+- **Purpose:** Initialise the model with spatial downsampling and neighborhood parameters.  
 - **Parameters:**  
   - `res`: float, downsampling factor (default 0.25)  
   - `k`: int, number of nearest neighbors for downsampling (default 2)  
