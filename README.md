@@ -33,7 +33,9 @@ This notebook is recommended for users who want to understand the methodology an
 
 ### Real Data Analysis
 
-For real neuroimaging datasets (e.g., HCP CIFTI time-series data), users should use the `DLSModel()` class. ## DLSModel Class: Summary of Methods
+For real neuroimaging datasets (e.g., HCP CIFTI time-series data), users should use the `DLSModel()` class. 
+
+## DLSModel Class: Summary of Methods
 
 The `DLSModel` class provides an end-to-end workflow for joint estimation of brain gradients and spatial parcels from dense functional connectivity data. It decomposes connectivity matrices into low-rank and sparse components and uses these to extract meaningful brain features.
 
