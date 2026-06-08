@@ -12,6 +12,7 @@ dependencies:
   - scikit-image
   - nibabel
   - nilearn
+  - colorcet
   - notebook
   - pip
   - pip:
