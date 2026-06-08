@@ -11,6 +11,7 @@ dependencies:
   - matplotlib
   - scikit-image
   - nibabel
+  - nilearn
   - notebook
   - pip
   - pip:
