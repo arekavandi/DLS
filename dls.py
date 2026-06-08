@@ -321,7 +321,7 @@ class Gradient:
         mymap = np.full(self.Nvleft, np.nan)
         mymap[self.indices_for_left]=self.grads[:len(self.indices_for_left),idx]-np.percentile(self.grads[:,idx],0)
         
-        plotting.view_surf(surf_mesh = './human.L.inflated.surf.gii', symmetric_cmap=False,
+        plotting.view_surf(surf_mesh = 'human.L.inflated.surf.gii', symmetric_cmap=False,
                            surf_map  = mymap,vmin=0, vmax=(np.nanpercentile(self.grads[:,idx],100)-np.nanpercentile(self.grads[:,idx],0)),
                            cmap      =  cc.m_rainbow)
                 
