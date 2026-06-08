@@ -12,7 +12,6 @@ dependencies:
   - scikit-image
   - nibabel
   - matplotlib
-  - notebook
   - pip
   - pip:
       - git+https://github.com/arekavandi/RobustPCA.git
